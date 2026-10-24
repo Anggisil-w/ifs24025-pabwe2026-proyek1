@@ -21,7 +21,7 @@ export class Toaster {
     const id = this.#nextId++;
     this.items.push({ id, message, variant });
     // Timer hanya di browser (di server tidak ada interaksi yang memunculkan toast)
-    if (duration > 0 && typeof globalThis.window !== 'undefined') {
+    if (duration > 0 && globalThis.window !== undefined) {
       this.#timers.set(id, setTimeout(() => this.dismiss(id), duration));
     }
     return id;

@@ -17,7 +17,14 @@ const FALLBACK_API_URL = import.meta.env.DEV
   : 'https://ifs24025-pabwe2026-proyek1-backend-production.up.railway.app/api';
 
 // Alamat backend sebenarnya (hanya dipakai di server)
-export const BACKEND_API_URL = (publicEnv.PUBLIC_API_BASE_URL || FALLBACK_API_URL).replace(/\/+$/, '');
+// Membuang garis miring di akhir tanpa regex (menghindari backtracking pada input panjang)
+function trimTrailingSlashes(value) {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === '/') end -= 1;
+  return value.slice(0, end);
+}
+
+export const BACKEND_API_URL = trimTrailingSlashes(publicEnv.PUBLIC_API_BASE_URL || FALLBACK_API_URL);
 
 // Alamat proxy same-origin yang dipakai browser
 export const BROWSER_API_PATH = '/api';
