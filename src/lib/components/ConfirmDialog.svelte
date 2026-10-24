@@ -12,10 +12,12 @@
     onconfirm,
     oncancel
   } = $props();
+
+  const messageId = `confirm-message-${$props.id()}`;
 </script>
 
-<Modal {title} onclose={oncancel}>
-  <p class="text-sm text-stone-600">{message}</p>
+<Modal {title} onclose={oncancel} describedby={messageId}>
+  <p id={messageId} class="text-sm text-stone-600">{message}</p>
 
   {#if error}
     <div class="mt-4">

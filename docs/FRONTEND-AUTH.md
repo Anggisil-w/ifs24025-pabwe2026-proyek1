@@ -20,6 +20,8 @@
 | `validation/forms.js` | `validateLogin/Register/Homestay/Room/Booking` → `{ valid, errors, data }` |
 | `toast.svelte.js` | `provideToaster()` / `useToast()` |
 
+Catatan: `src/lib/auth.js` (versi lama) sudah dihapus; `server/auth/cookie.js` dan `auth/redirect.js` adalah satu-satunya sumber kebenaran.
+
 `+layout.js` tidak ada; guard berada di `+layout.server.js` tiap grup rute dan hanya memanggil `guards.js`.
 
 ## Alur data

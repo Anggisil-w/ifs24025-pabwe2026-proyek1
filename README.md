@@ -43,6 +43,36 @@ Browser tidak memanggil back-end langsung; semua perubahan data lewat proxy `/ap
 
 Arsitektur autentikasi dan validasi: `docs/FRONTEND-AUTH.md`.
 
+## Arsitektur Singkat
+
+```
+src/
+├── hooks.server.js        pulihkan sesi dari cookie httpOnly di setiap request, pasang header keamanan
+├── lib/
+│   ├── api.js             satu-satunya klien API (server: langsung ke backend; browser: lewat proxy /api)
+│   ├── auth/              logika autentikasi murni dan teruji: redirect aman, peran, keputusan akses, konteks sesi
+│   ├── server/            kode yang hanya jalan di server: cookie sesi, guard rute, aturan proxy API
+│   ├── validation/        aturan validasi per kolom (rules.js) dan per form (forms.js); pintu masuknya validators.js
+│   └── components/        komponen UI bersama (Modal, ConfirmDialog, Alert, Badge, ...), masing-masing punya *.test.js
+└── routes/                halaman; data dibaca lewat +page.server.js, perubahan data lewat form action atau proxy /api
+```
+
+Alur singkatnya:
+
+1. **Membaca data**: `+page.server.js` memanggil backend langsung memakai token dari `event.locals` (`apiOptions(event)`).
+2. **Mengubah data dari browser**: komponen memanggil `/api/*` di domain sendiri; `routes/api/[...path]/+server.js` menempelkan token dari cookie lalu meneruskannya ke backend.
+3. **Akses halaman**: seluruh keputusan redirect atau 403 hanya ada di `lib/server/auth/guards.js`.
+4. **Token tidak pernah sampai ke JavaScript browser** (tidak ada `localStorage`).
+
+Satu sumber kebenaran: logika sesi/cookie hanya ada di `lib/server/auth/cookie.js`, dan logika redirect aman hanya ada di `lib/auth/redirect.js`.
+Penjelasan lengkap ada di `docs/FRONTEND-AUTH.md`.
+
+## Aksesibilitas Komponen
+
+`Modal` (dan `ConfirmDialog` di atasnya) memenuhi pola dialog WAI-ARIA: `role="dialog"` + `aria-modal`, judul lewat `aria-labelledby`,
+deskripsi opsional lewat `aria-describedby`, fokus pindah ke dalam dialog saat dibuka, terkunci di dalamnya (Tab/Shift+Tab berputar),
+dikembalikan ke pemicu saat ditutup, Esc menutup, dan gulir halaman di belakangnya dikunci.
+
 ## Perintah
 
 ```bash
