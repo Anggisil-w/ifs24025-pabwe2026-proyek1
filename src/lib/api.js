@@ -14,7 +14,7 @@ import { browser } from '$app/environment';
 // Fallback: saat development lokal -> localhost; saat build produksi -> backend Railway.
 const FALLBACK_API_URL = import.meta.env.DEV
   ? 'http://localhost:3000/api'
-  : 'https://ifs24025-pabwe2026-proyek1-backend-production.up.railway.app/api';;
+  : 'https://ifs24025-pabwe2026-proyek1-backend-production.up.railway.app/api';
 
 // Alamat backend sebenarnya (hanya dipakai di server)
 export const BACKEND_API_URL = (publicEnv.PUBLIC_API_BASE_URL || FALLBACK_API_URL).replace(/\/+$/, '');
