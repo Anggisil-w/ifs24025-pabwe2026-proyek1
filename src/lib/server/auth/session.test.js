@@ -22,7 +22,9 @@ function makeEvent({ token, path = '/' } = {}) {
   };
 }
 
-beforeEach(() => mocks.fetchCurrentUser.mockReset());
+beforeEach(() => {
+  mocks.fetchCurrentUser.mockReset();
+});
 
 describe('attachSession', () => {
   it('tanpa cookie: pengguna null dan API tidak dipanggil', async () => {

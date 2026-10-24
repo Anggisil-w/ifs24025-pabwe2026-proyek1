@@ -8,7 +8,9 @@ vi.mock('#lib/api', () => ({
 
 import { createSubmitter } from './submit.svelte.js';
 
-beforeEach(() => toast.error.mockClear());
+beforeEach(() => {
+  toast.error.mockClear();
+});
 
 describe('createSubmitter', () => {
   it('awalnya tidak menyimpan dan tidak ada error', () => {
