@@ -1,0 +1,18 @@
+node_modules/
+.svelte-kit/
+build/
+.vercel/
+.netlify/
+.env
+.env.*
+!.env.example
+
+# Hasil test, coverage, dan scan
+coverage/
+junit.xml
+.trivy-cache/
+trivy-results.sarif
+latest-app.zip
+
+*.log
+.DS_Store

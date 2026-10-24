@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+
+/* Palet utama aplikasi (nuansa teal, terinspirasi Danau Toba) */
+@theme {
+  --color-brand-50: #f0fdfa;
+  --color-brand-100: #ccfbf1;
+  --color-brand-200: #99f6e4;
+  --color-brand-300: #5eead4;
+  --color-brand-400: #2dd4bf;
+  --color-brand-500: #14b8a6;
+  --color-brand-600: #0d9488;
+  --color-brand-700: #0f766e;
+  --color-brand-800: #115e59;
+  --color-brand-900: #134e4a;
+}
+
+@layer base {
+  /* Tailwind v4 memakai currentColor untuk border; kembalikan ke abu-abu seperti v3 */
+  *,
+  ::after,
+  ::before {
+    border-color: var(--color-stone-200);
+  }
+
+  body {
+    @apply bg-stone-50 text-stone-800 antialiased;
+  }
+}
+
+/* Kelas komponen yang dipakai berulang agar markup tidak panjang */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply bg-brand-700 text-white hover:bg-brand-800;
+  }
+  .btn-secondary {
+    @apply border border-stone-300 bg-white text-stone-700 hover:bg-stone-50;
+  }
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+  .input {
+    @apply block w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm shadow-xs placeholder:text-stone-500 focus:border-brand-500 focus:outline-hidden focus:ring-2 focus:ring-brand-200 disabled:bg-stone-100;
+  }
+  .label {
+    @apply mb-1 block text-sm font-medium text-stone-700;
+  }
+  .field-error {
+    @apply mt-1 text-xs text-red-600;
+  }
+  .card {
+    @apply rounded-2xl border border-stone-200 bg-white shadow-xs;
+  }
+}

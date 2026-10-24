@@ -1,0 +1,38 @@
+{
+  "name": "mulakjabu-frontend",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  },
+  "scripts": {
+    "start": "bun ./build",
+    "dev": "vite dev",
+    "build": "bun --bun vite build",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-bun": "^1.0.0",
+    "@sveltejs/adapter-vercel": "^7.0.1",
+    "@sveltejs/kit": "^3.0.1",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/svelte": "^5.4.2",
+    "@vitest/coverage-v8": "^5.0.3",
+    "jsdom": "^30.1.2",
+    "svelte": "^5.57.2",
+    "svelte-check": "^4.7.6",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.3"
+  }
+}
