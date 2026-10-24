@@ -2,6 +2,12 @@ import { error } from '@sveltejs/kit';
 import { getHomestay, getHomestayRooms, ApiError } from '#lib/api';
 import { apiOptions } from '#lib/server/auth/session';
 
+// 400/404 -> 404; status error lain diteruskan; selain itu (mis. 0 saat backend mati) -> 503
+function errorStatus(status) {
+  if (status === 400 || status === 404) return 404;
+  return status >= 400 ? status : 503;
+}
+
 export async function load(event) {
   const options = apiOptions(event);
   try {
@@ -13,8 +19,7 @@ export async function load(event) {
   } catch (err) {
     // 400/404 dari backend -> halaman 404; kegagalan lain (mis. backend mati) -> 503
     if (err instanceof ApiError) {
-      const notFound = err.status === 400 || err.status === 404;
-      error(notFound ? 404 : err.status >= 400 ? err.status : 503, err.message);
+      error(errorStatus(err.status), err.message);
     }
     throw err;
   }

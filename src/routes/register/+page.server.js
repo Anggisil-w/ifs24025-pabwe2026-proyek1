@@ -2,11 +2,10 @@ import { fail, redirect } from '@sveltejs/kit';
 import { register, toErrorInfo } from '#lib/api';
 import { safeNext } from '#lib/auth/redirect';
 import { setSessionCookie } from '#lib/server/auth/cookie';
-import { redirectIfAuthenticated } from '#lib/server/auth/guards';
 import { validateRegister } from '#lib/validators';
 
 // Sudah login -> langsung ke tujuan (?next=); selain itu tampilkan form
-export const load = redirectIfAuthenticated;
+export { redirectIfAuthenticated as load } from '#lib/server/auth/guards';
 
 export const actions = {
   default: async ({ request, cookies, url, fetch }) => {

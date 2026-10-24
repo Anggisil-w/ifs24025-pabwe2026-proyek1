@@ -47,46 +47,59 @@ export function toErrorInfo(err) {
 
 // ---------- Fetch wrapper ----------
 
-// options.fetch: isi dengan fetch milik SvelteKit saat dipanggil dari fungsi load
-async function request(path, { method = 'GET', body, query, token, fetch: fetchFn = globalThis.fetch } = {}) {
+function buildUrl(path, query) {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query ?? {})) {
     if (value !== undefined && value !== null && value !== '') params.set(key, String(value));
   }
   const queryString = params.toString();
-  const url = `${baseUrl()}${path}${queryString ? `?${queryString}` : ''}`;
+  const suffix = queryString ? `?${queryString}` : '';
+  return `${baseUrl()}${path}${suffix}`;
+}
 
+function buildHeaders(hasBody, token) {
   const headers = {};
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  if (hasBody) headers['Content-Type'] = 'application/json';
   // Di browser token tidak pernah ada; cookie httpOnly dikirim otomatis ke proxy /api
   if (token && !browser) headers.Authorization = `Bearer ${token}`;
+  return Object.keys(headers).length > 0 ? headers : undefined;
+}
+
+const networkError = () =>
+  new ApiError(
+    0,
+    browser
+      ? 'Tidak dapat terhubung ke server. Periksa koneksi internetmu lalu coba lagi.'
+      : `Tidak dapat terhubung ke server API (${BACKEND_API_URL}). Pastikan backend sudah berjalan.`
+  );
+
+async function readJson(response) {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+// options.fetch: isi dengan fetch milik SvelteKit saat dipanggil dari fungsi load
+async function request(path, { method = 'GET', body, query, token, fetch: fetchFn = globalThis.fetch } = {}) {
+  const hasBody = body !== undefined;
 
   let response;
   try {
-    response = await fetchFn(url, {
+    response = await fetchFn(buildUrl(path, query), {
       method,
-      headers: Object.keys(headers).length > 0 ? headers : undefined,
-      body: body !== undefined ? JSON.stringify(body) : undefined
+      headers: buildHeaders(hasBody, token),
+      body: hasBody ? JSON.stringify(body) : undefined
     });
   } catch {
-    throw new ApiError(
-      0,
-      browser
-        ? 'Tidak dapat terhubung ke server. Periksa koneksi internetmu lalu coba lagi.'
-        : `Tidak dapat terhubung ke server API (${BACKEND_API_URL}). Pastikan backend sudah berjalan.`
-    );
+    throw networkError();
   }
 
   // 204 No Content (hasil DELETE) tidak punya body
   if (response.status === 204) return null;
 
-  let payload = null;
-  try {
-    payload = await response.json();
-  } catch {
-    payload = null;
-  }
-
+  const payload = await readJson(response);
   if (!response.ok) {
     throw new ApiError(
       response.status,

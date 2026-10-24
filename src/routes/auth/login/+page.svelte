@@ -6,4 +6,8 @@
   let { data, form } = $props();
 </script>
 
+<svelte:head>
+  <title>Masuk · Mulakjabu</title>
+</svelte:head>
+
 <LoginPage {data} {form} />

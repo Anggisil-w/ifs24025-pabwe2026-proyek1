@@ -19,7 +19,7 @@ export const LIMITS = Object.freeze({
   GUESTS: { min: 1, max: 100 }
 });
 
-const CONTROL_CHARS = /[\u0000-\u001F\u007F]/;
+const CONTROL_CHARS = /\p{Cc}/u;
 const PHONE_PATTERN = /^\+?[0-9\s\-()]{6,20}$/; // sama dengan backend
 const EMAIL_PATTERN =
   /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/;
@@ -47,7 +47,7 @@ export function isValidEmail(value) {
 export function isValidPhone(value) {
   const phone = trimmed(value);
   if (!PHONE_PATTERN.test(phone)) return false;
-  const digits = phone.replace(/\D/g, '').length;
+  const digits = phone.replaceAll(/\D/g, '').length;
   return digits >= 6 && digits <= 15; // batas E.164
 }
 
@@ -74,9 +74,9 @@ export function isValidIsoDate(value) {
 
 // Bilangan bulat dari angka atau teks digit murni ("12"); selain itu NaN (menolak "1e3", "1.5", "0x10", "")
 export function toInteger(value) {
-  if (typeof value === 'number') return Number.isInteger(value) ? value : NaN;
+  if (typeof value === 'number') return Number.isInteger(value) ? value : Number.NaN;
   const text = trimmed(value);
-  return /^-?\d+$/.test(text) ? Number(text) : NaN;
+  return /^-?\d+$/.test(text) ? Number(text) : Number.NaN;
 }
 
 // ---------- Pemeriksa field (mengembalikan pesan error atau undefined) ----------

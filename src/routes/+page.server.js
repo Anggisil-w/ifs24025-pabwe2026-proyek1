@@ -10,7 +10,7 @@ export async function load(event) {
   const options = apiOptions(event);
   const search = (url.searchParams.get('search') ?? '').trim().slice(0, 100);
   const city = (url.searchParams.get('city') ?? '').trim().slice(0, 100);
-  const page = Math.min(10_000, Math.max(1, parseInt(url.searchParams.get('page') ?? '1', 10) || 1));
+  const page = Math.min(10_000, Math.max(1, Number.parseInt(url.searchParams.get('page') ?? '1', 10) || 1));
   const filters = { search, city, page };
 
   try {

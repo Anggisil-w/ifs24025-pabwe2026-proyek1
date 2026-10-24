@@ -40,16 +40,17 @@ const result = (errors, data) => ({ valid: Object.keys(errors).length === 0, err
 
 // ---------- Autentikasi ----------
 
+function loginPasswordProblem(pass) {
+  if (pass === '') return 'Password wajib diisi';
+  if (pass.length > PASSWORD_MAX_LENGTH) return `Password maksimal ${PASSWORD_MAX_LENGTH} karakter`;
+  return undefined;
+}
+
 export function validateLogin({ email, password } = {}) {
   const pass = toText(password);
   const errors = collect({
     email: checkEmail(email),
-    password:
-      pass === ''
-        ? 'Password wajib diisi'
-        : pass.length > PASSWORD_MAX_LENGTH
-          ? `Password maksimal ${PASSWORD_MAX_LENGTH} karakter`
-          : undefined
+    password: loginPasswordProblem(pass)
   });
   return result(errors, { email: trimmed(email).toLowerCase(), password: pass });
 }
@@ -65,7 +66,7 @@ export function validateRegister({ name, email, password, confirm } = {}) {
     name: checkPersonName(name, 'Nama'),
     email: checkEmail(email),
     password: passwordProblem,
-    confirm: pass !== toText(confirm) ? 'Password tidak cocok' : undefined
+    confirm: pass === toText(confirm) ? undefined : 'Password tidak cocok'
   });
   return result(errors, { name: trimmed(name), email: trimmed(email).toLowerCase(), password: pass });
 }
@@ -99,13 +100,14 @@ export function validateHomestay({ name, city, address, phone, image_url, descri
 
 // ---------- Kamar (admin) ----------
 
+function homestayIdProblem(value) {
+  if (isBlank(value)) return 'Pilih homestay pemilik kamar';
+  return toInteger(value) >= 1 ? undefined : 'Homestay tidak valid';
+}
+
 export function validateRoom({ homestay_id, name, type, capacity, price_per_night, description, is_active } = {}) {
   const errors = collect({
-    homestay_id: isBlank(homestay_id)
-      ? 'Pilih homestay pemilik kamar'
-      : toInteger(homestay_id) >= 1
-        ? undefined
-        : 'Homestay tidak valid',
+    homestay_id: homestayIdProblem(homestay_id),
     name: checkText(name, { label: 'Nama kamar', ...LIMITS.ROOM_NAME }),
     type: checkText(type, { label: 'Jenis kamar', ...LIMITS.ROOM_TYPE }),
     capacity: checkInteger(capacity, { label: 'Kapasitas', ...LIMITS.CAPACITY }),
