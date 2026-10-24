@@ -13,7 +13,8 @@
     oncancel
   } = $props();
 
-  const messageId = `confirm-message-${$props.id()}`;
+  const uid = $props.id();
+  const messageId = `confirm-message-${uid}`;
 </script>
 
 <Modal {title} onclose={oncancel} describedby={messageId}>
