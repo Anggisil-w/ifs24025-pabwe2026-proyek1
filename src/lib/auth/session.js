@@ -1,24 +1,39 @@
-// Memulihkan sesi dari cookie pada setiap request dan menyediakan konteks pemanggilan API untuk loader server.
-import { fetchCurrentUser } from '#lib/api';
-import { clearSessionCookie, readSessionToken } from './cookie.js';
+// Konteks sesi untuk komponen. Menggantikan pembacaan `page.data.user` yang tersebar dan
+// variabel modul global: konteks Svelte dibuat per-render sehingga aman untuk SSR
+// (tidak ada state yang bocor antar-request di server).
+//
+// Pemakaian:
+//   +layout.svelte  ->  provideSession(() => data.user)
+//   komponen mana pun ->  const session = useSession();  session.user, session.isAdmin, ...
+import { getContext, setContext } from 'svelte';
+import { hasRole, isAdmin } from './roles.js';
 
-// Mengisi event.locals.user / event.locals.token. Dipanggil dari hooks.server.js.
-export async function attachSession(event) {
-  event.locals.user = null;
-  event.locals.token = null;
+const SESSION_KEY = Symbol('mulakjabu.session');
 
-  const token = readSessionToken(event.cookies);
-  if (!token || event.url.pathname.startsWith('/_app/')) return;
-
-  try {
-    event.locals.user = await fetchCurrentUser(token, { fetch: event.fetch });
-    event.locals.token = token;
-  } catch (err) {
-    // 401 = token kedaluwarsa/palsu/akun dihapus -> hapus cookie.
-    // Kegagalan lain (backend mati, error tak terduga) -> biarkan cookie, anggap belum login untuk request ini.
-    if (err?.status === 401) clearSessionCookie(event.cookies);
-  }
+// getUser dipanggil ulang setiap properti dibaca, sehingga selalu mengikuti data layout terbaru
+export function createSession(getUser) {
+  return {
+    get user() {
+      return getUser() ?? null;
+    },
+    get isAuthenticated() {
+      return Boolean(getUser());
+    },
+    get isAdmin() {
+      return isAdmin(getUser());
+    },
+    hasRole: (...roles) => hasRole(getUser(), ...roles)
+  };
 }
 
-// Opsi untuk fungsi di #lib/api dari dalam loader/action server: fetch milik SvelteKit + token sesi (jika ada)
-export const apiOptions = (event) => ({ fetch: event.fetch, token: event.locals.token ?? undefined });
+export function provideSession(getUser) {
+  const session = createSession(getUser);
+  setContext(SESSION_KEY, session);
+  return session;
+}
+
+export function useSession() {
+  const session = getContext(SESSION_KEY);
+  if (!session) throw new Error('useSession() hanya bisa dipakai di dalam +layout.svelte utama (provideSession belum dipanggil).');
+  return session;
+}

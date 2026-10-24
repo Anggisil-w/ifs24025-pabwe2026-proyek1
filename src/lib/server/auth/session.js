@@ -1,5 +1,5 @@
 // Memulihkan sesi dari cookie pada setiap request dan menyediakan konteks pemanggilan API untuk loader server.
-import { fetchCurrentUser, ApiError } from '#lib/api';
+import { fetchCurrentUser } from '#lib/api';
 import { clearSessionCookie, readSessionToken } from './cookie.js';
 
 // Mengisi event.locals.user / event.locals.token. Dipanggil dari hooks.server.js.
@@ -15,8 +15,8 @@ export async function attachSession(event) {
     event.locals.token = token;
   } catch (err) {
     // 401 = token kedaluwarsa/palsu/akun dihapus -> hapus cookie.
-    // Kegagalan lain (mis. backend sedang mati) -> biarkan cookie, anggap belum login untuk request ini.
-    if (err instanceof ApiError && err.status === 401) clearSessionCookie(event.cookies);
+    // Kegagalan lain (backend mati, error tak terduga) -> biarkan cookie, anggap belum login untuk request ini.
+    if (err?.status === 401) clearSessionCookie(event.cookies);
   }
 }
 
