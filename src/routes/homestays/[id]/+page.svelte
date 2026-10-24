@@ -2,6 +2,8 @@
   import { page } from '$app/state';
   import Alert from '#lib/components/Alert.svelte';
   import Badge from '#lib/components/Badge.svelte';
+  import EmptyState from '#lib/components/EmptyState.svelte';
+  import HomestayImage from '#lib/components/HomestayImage.svelte';
   import { createBooking } from '#lib/api';
   import { createSubmitter } from '#lib/submit.svelte.js';
   import { formatRupiah, formatDate, countNights, todayISO } from '#lib/format';
@@ -83,17 +85,7 @@
   <!-- Kolom kiri: informasi homestay dan daftar kamar -->
   <div class="space-y-8 lg:col-span-2">
     <section class="card overflow-hidden">
-      <div class="relative h-64 bg-gradient-to-br from-brand-100 to-brand-300 sm:h-80">
-        <div class="absolute inset-0 flex items-center justify-center text-7xl" aria-hidden="true">🏡</div>
-        {#if data.homestay.image_url}
-          <img
-            src={data.homestay.image_url}
-            alt={data.homestay.name}
-            class="absolute inset-0 h-full w-full object-cover"
-            onerror={(event) => (event.currentTarget.style.display = 'none')}
-          />
-        {/if}
-      </div>
+      <HomestayImage src={data.homestay.image_url ?? ''} alt={data.homestay.name} large class="h-64 sm:h-80" />
       <div class="space-y-3 p-6">
         <div class="flex flex-wrap items-center gap-2">
           <h1 class="text-2xl font-bold text-stone-900">{data.homestay.name}</h1>
@@ -112,7 +104,7 @@
     <section>
       <h2 class="mb-4 text-xl font-semibold text-stone-900">Kamar tersedia</h2>
       {#if activeRooms.length === 0}
-        <div class="card px-6 py-8 text-center text-stone-500">Belum ada kamar aktif di homestay ini.</div>
+        <EmptyState title="Belum ada kamar aktif di homestay ini." />
       {:else}
         <div class="grid gap-4 sm:grid-cols-2">
           {#each activeRooms as room (room.id)}

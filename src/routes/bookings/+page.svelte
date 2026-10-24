@@ -2,6 +2,7 @@
   import { invalidateAll } from '$app/navigation';
   import Alert from '#lib/components/Alert.svelte';
   import Badge from '#lib/components/Badge.svelte';
+  import EmptyState from '#lib/components/EmptyState.svelte';
   import ConfirmDialog from '#lib/components/ConfirmDialog.svelte';
   import { updateBookingStatus, toErrorInfo } from '#lib/api';
   import { BOOKING_STATUSES, STATUS_LABELS, STATUS_TRANSITIONS, STATUS_ACTIONS } from '#lib/constants';
@@ -98,10 +99,11 @@
 
 {#if !data.loadError}
   {#if data.bookings.length === 0}
-    <div class="card px-6 py-12 text-center text-stone-500">
-      {data.status ? `Belum ada pesanan berstatus "${STATUS_LABELS[data.status]}".` : 'Belum ada pesanan.'}
-      {#if !isAdmin && !data.status}<a href="/" class="mt-3 block font-semibold text-brand-700 hover:underline">Cari homestay</a>{/if}
-    </div>
+    <EmptyState
+      title={data.status ? `Belum ada pesanan berstatus "${STATUS_LABELS[data.status]}".` : 'Belum ada pesanan.'}
+      actionHref={!isAdmin && !data.status ? '/' : ''}
+      actionLabel="Cari homestay"
+    />
   {:else}
     <p class="mb-3 text-sm text-stone-500">{data.bookings.length} pesanan</p>
 

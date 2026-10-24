@@ -1,5 +1,7 @@
 <script>
   import Alert from '#lib/components/Alert.svelte';
+  import EmptyState from '#lib/components/EmptyState.svelte';
+  import HomestayImage from '#lib/components/HomestayImage.svelte';
   import { formatRupiah } from '#lib/format';
 
   let { data } = $props();
@@ -79,13 +81,12 @@
 {#if data.loadError}
   <Alert error={data.loadError} />
 {:else if data.homestays.length === 0}
-  <div class="card px-6 py-12 text-center">
-    <p class="text-lg font-semibold text-stone-800">Tidak ada homestay yang cocok</p>
-    <p class="mt-1 text-sm text-stone-500">Coba ubah kata kunci atau pilih kota lain.</p>
-    {#if hasFilter || data.filters.page > 1}
-      <a href="/" class="btn btn-primary mt-5">Tampilkan semua homestay</a>
-    {/if}
-  </div>
+  <EmptyState
+    title="Tidak ada homestay yang cocok"
+    description="Coba ubah kata kunci atau pilih kota lain."
+    actionHref={hasFilter || data.filters.page > 1 ? '/' : ''}
+    actionLabel="Tampilkan semua homestay"
+  />
 {:else}
   <p class="mb-4 text-sm text-stone-500">
     Menampilkan {firstItem}–{lastItem} dari {data.pagination.total} homestay
@@ -94,22 +95,11 @@
   <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {#each data.homestays as homestay (homestay.id)}
       <article class="card flex flex-col overflow-hidden">
-        <!-- Foto; jika gagal dimuat, latar gradasi + ikon tetap terlihat -->
-        <div class="relative h-44 bg-gradient-to-br from-brand-100 to-brand-300">
-          <div class="absolute inset-0 flex items-center justify-center text-5xl" aria-hidden="true">🏡</div>
-          {#if homestay.image_url}
-            <img
-              src={homestay.image_url}
-              alt={homestay.name}
-              loading="lazy"
-              class="absolute inset-0 h-full w-full object-cover"
-              onerror={(event) => (event.currentTarget.style.display = 'none')}
-            />
-          {/if}
+        <HomestayImage src={homestay.image_url ?? ''} alt={homestay.name} lazy class="h-44">
           <span class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-semibold text-brand-700">
             {homestay.city}
           </span>
-        </div>
+        </HomestayImage>
 
         <div class="flex flex-1 flex-col p-5">
           <h2 class="text-lg font-semibold text-stone-900">{homestay.name}</h2>

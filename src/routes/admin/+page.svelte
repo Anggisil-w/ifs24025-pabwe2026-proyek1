@@ -2,6 +2,7 @@
   import { invalidateAll } from '$app/navigation';
   import Alert from '#lib/components/Alert.svelte';
   import Badge from '#lib/components/Badge.svelte';
+  import EmptyState from '#lib/components/EmptyState.svelte';
   import Modal from '#lib/components/Modal.svelte';
   import ConfirmDialog from '#lib/components/ConfirmDialog.svelte';
   import HomestayForm from '#lib/components/HomestayForm.svelte';
@@ -136,7 +137,7 @@
 {#if !data.loadError}
   {#if tab === 'homestays'}
     {#if data.homestays.length === 0}
-      <div class="card px-6 py-12 text-center text-stone-500">Belum ada homestay. Klik "Tambah homestay" untuk memulai.</div>
+      <EmptyState title="Belum ada homestay." description={'Klik "Tambah homestay" untuk memulai.'} />
     {:else}
       <div class="card overflow-x-auto">
         <table class="min-w-full divide-y divide-stone-200 text-sm">
@@ -180,7 +181,7 @@
     </div>
 
     {#if filteredRooms.length === 0}
-      <div class="card px-6 py-12 text-center text-stone-500">Tidak ada kamar untuk ditampilkan.</div>
+      <EmptyState title="Tidak ada kamar untuk ditampilkan." />
     {:else}
       <div class="card overflow-x-auto">
         <table class="min-w-full divide-y divide-stone-200 text-sm">
