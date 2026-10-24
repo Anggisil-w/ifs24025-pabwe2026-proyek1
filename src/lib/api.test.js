@@ -60,7 +60,7 @@ describe('alamat dasar', () => {
   it('memakai alamat lokal saat PUBLIC_API_BASE_URL kosong (mode dev)', async () => {
     vi.resetModules();
     vi.doMock('$app/environment', () => ({ browser: false }));
-    vi.doMock('$env/static/public', () => ({}));
+    vi.doMock('$env/static/public', () => ({ PUBLIC_API_BASE_URL: '' }));
     const fresh = await import('./api.js');
     expect(fresh.BACKEND_API_URL).toBe('http://localhost:3000/api');
     vi.doUnmock('$env/static/public');

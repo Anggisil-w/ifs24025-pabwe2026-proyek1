@@ -48,7 +48,9 @@ describe('attachSession', () => {
   });
 
   it('401 menghapus cookie', async () => {
-    mocks.fetchCurrentUser.mockRejectedValue(new mocks.ApiError(401, 'kedaluwarsa'));
+    mocks.fetchCurrentUser.mockImplementation(async () => {
+      throw new mocks.ApiError(401, 'kedaluwarsa');
+    });
     const event = makeEvent({ token: 'abc' });
     await attachSession(event);
     expect(event.locals).toEqual({ user: null, token: null });
@@ -56,7 +58,9 @@ describe('attachSession', () => {
   });
 
   it('kegagalan lain (backend mati) tidak menghapus cookie', async () => {
-    mocks.fetchCurrentUser.mockRejectedValue(new mocks.ApiError(0, 'offline'));
+    mocks.fetchCurrentUser.mockImplementation(async () => {
+      throw new mocks.ApiError(0, 'offline');
+    });
     const event = makeEvent({ token: 'abc' });
     await attachSession(event);
     expect(event.locals.user).toBeNull();
@@ -64,7 +68,9 @@ describe('attachSession', () => {
   });
 
   it('error non-ApiError juga tidak menghapus cookie', async () => {
-    mocks.fetchCurrentUser.mockRejectedValue(new Error('aneh'));
+    mocks.fetchCurrentUser.mockImplementation(async () => {
+      throw new Error('aneh');
+    });
     const event = makeEvent({ token: 'abc' });
     await attachSession(event);
     expect(event.cookies.delete).not.toHaveBeenCalled();
