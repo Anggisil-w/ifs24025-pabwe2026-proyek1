@@ -1,4 +1,5 @@
 <script>
+  import { untrack } from 'svelte';
   import { enhance } from '$app/forms';
   import Alert from '#lib/components/Alert.svelte';
   import { withNext } from '#lib/auth/redirect';
@@ -8,8 +9,8 @@
 
   let submitting = $state(false);
   let errors = $state({});
-  let name = $state(form?.name ?? '');
-  let email = $state(form?.email ?? '');
+  let name = $state(untrack(() => form?.name ?? ''));
+  let email = $state(untrack(() => form?.email ?? ''));
   let password = $state('');
   let confirm = $state('');
 
